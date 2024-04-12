@@ -22,6 +22,34 @@ namespace TaskManager.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("TaskManager.Database.Models.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("TaskManager.Database.Models.FileModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -45,6 +73,33 @@ namespace TaskManager.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FileModels");
+                });
+
+            modelBuilder.Entity("TaskManager.Database.Models.Product", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("PhotoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PhotoId");
+
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("TaskManager.Database.Models.UserModel", b =>
@@ -91,6 +146,32 @@ namespace TaskManager.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("TaskManager.Database.Models.Comment", b =>
+                {
+                    b.HasOne("TaskManager.Database.Models.UserModel", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TaskManager.Database.Models.Product", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("TaskManager.Database.Models.Product", b =>
+                {
+                    b.HasOne("TaskManager.Database.Models.FileModel", "Photo")
+                        .WithMany()
+                        .HasForeignKey("PhotoId");
+
+                    b.Navigation("Photo");
+                });
+
             modelBuilder.Entity("TaskManager.Database.Models.UserModel", b =>
                 {
                     b.HasOne("TaskManager.Database.Models.FileModel", "Avatar")
@@ -104,6 +185,11 @@ namespace TaskManager.Migrations
                     b.Navigation("Avatar");
 
                     b.Navigation("Banner");
+                });
+
+            modelBuilder.Entity("TaskManager.Database.Models.Product", b =>
+                {
+                    b.Navigation("Comments");
                 });
 #pragma warning restore 612, 618
         }

@@ -81,7 +81,7 @@ builder.Services.AddCors(option => option.AddPolicy("TaskManger", builder =>
 builder.Services.AddMemoryCache(); 
 
 builder.Services.AddControllers();
-
+builder.Services.AddCoreAdmin();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -96,8 +96,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 app.UseStaticFiles();
-
-
+app.MapDefaultControllerRoute();
 
 app.UseAuthorization();
 app.UseAuthentication();
